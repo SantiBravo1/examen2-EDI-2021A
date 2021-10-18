@@ -1,119 +1,116 @@
 #include <stdio.h>
-#define N 3
-#define M 2
-#define C 15
+#include <string.h>
 
-void capturaArreglos(int arr1[N], char nom[C], float ES[N][M]);
-float buscaMasAlto(float EsSu[N], int *renglon, int *columna);
-void burbuja(float ESTSUE[N][M]);
-void imprimirDatos(int arrcl, char n, float es[N][M]);
+#define N 3
+
+void captura(int clave[N], char nombre[N][20], float datos[N][2]);
+int buscaMasAlto(float info[N][2]);
+void ordenaSueldos(int clave[N], char nombre[N][20], float datos[N][2]);
+void imprimirTabla(int clave[N], char nombre[N][20], float datos[N][2]);
 
 int main()
 {
-    int arrclave[N];
-    char nombre[C];
-    float EstSue[N][M];
-    int ren, col;
-    float mayor;
+    int clave[N];
+    char nombre[N][20];
+    float datos[N][2];
 
-    capturaArreglos(arrclave, nombre, EstSue);
+    int posicionMasAlta;
+    
+    captura(clave, nombre, datos);
 
-    mayor=buscaMasAlto(EstSue, &ren, &col);
-    printf("La persona mas alta se encuentra en la posicion[%d][%d]", ren, col);
+    ordenaSueldos(clave, nombre, datos);
 
-    imprimirDatos(arrclave, nombre, EstSue);
+    imprimirTabla(clave, nombre, datos);
+    
+    posicionMasAlta=buscaMasAlto(datos);
+
+    printf("El Nombre del empleado mas alto es: %s", nombre[posicionMasAlta]);
+    printf("Y su estatura es: %f", datos[posicionMasAlta][0]);
+
     return 0;
 }
 
-void capturaArreglos(int arr1[N], char nom[C], float ES[N][M])
+void captura(int clave[N], char nombre[N][20], float datos[N][2])
 {
-    int i, j;
+    int empleado;
 
-    for(i=0; i<N; i++)
+    for(empleado=0; empleado<N; empleado++)
     {
-        printf("Clave[%d]: ", i);
-        scanf("%d", &arr1[i]);
-    }
-    for(i=0; i<N; i++)
-    {
-        printf("Nombre[%d]: ", i);
-        scanf("%s", nom);
-        fflush(stdin);
-    }
-    for(i=0; i<N; i++)
-    {
-        for(j=0; j<M; j++)
-        {
-            printf("Estatura y sueldo[%d][%d]: ", i, j);
-            scanf("%f", &ES[i][j]);
-        }
+        printf("Clave[%d]: ", empleado);
+        scanf("%d", &clave[empleado]);
+
+        printf("Nombre[%d]: ", empleado);
+        scanf("%s", nombre[empleado]);
+
+        printf("Estatura[%d]: ", empleado);
+        scanf("%f", &datos[empleado][0]);
+
+        printf("Sueldo[%d]: ", empleado);
+        scanf("%f", &datos[empleado][1]);
     }
 }
-float buscaMasAlto(float EsSu[N][M], int *renglon, int *columna)
+
+int buscaMasAlto(float info[N][2])
 {
-    int ren, col;
-    float mayor=EsSu[0][0];
-    for(ren=0; ren<N; ren++)
+    int empleado;
+    float Alto=info[0][0];
+    int posicion=0;
+
+    for(empleado=0; empleado<N; empleado++)
     {
-        for(col=0; col<M; col++)
+        if(info[empleado][0]>Alto)
         {
-            if(EsSu[ren][col]>mayor)
-            {
-                mayor=EsSu[ren][col];
-                *renglon=ren;
-                *columna=col;
-            }
+           Alto=info[empleado][0];
+           posicion=empleado;
         }
-    }
-    return mayor;
+    } 
+    return posicion;
 }
 
-void burbuja(float ESTSUE[N][M])
+void ordenaSueldos(int clave[N], char nombre[N][20], float datos[N][2])
 {
     int i, j;
     float aux;
-    for(j=0; j<N-1; j++)
+    int auxCl;
+    char auxNom[20];
+
+    for(i=0; i<N-1; i++)
     {
-        for(i=0; i<N-(j+1); i++)
+        for(j=0; j<N-1; j++)
         {
-            if(ESTSUE[i]>ESTSUE[i+1])
-            {
-                aux=ESTSUE[i+1];
-                ESTSUE[i+1]=ESTSUE[i];
-                ESTSUE[i]=aux;
-            }
+           if(datos[j][1]<datos[j+1][1])
+           {
+               aux=datos[j][1];
+               datos[j][1]=datos[j+1][1];
+               datos[j+1][1]=aux;
+
+               aux=datos[j][0];
+               datos[j][0]=datos[j+1][0];
+               datos[j+1][0]=aux;
+               
+               auxCl=clave[j];
+               clave[j]=clave[j+1];
+               clave[j+1]=auxCl;
+
+               strcpy(auxNom, nombre[j]);
+               strcpy(nombre[j], nombre[j+1]);
+               strcpy(nombre[j+1], auxNom);
+           }
         }
     }
 }
 
-void imprimirDatos(int arrcl, char n, float es[N][M])
+void imprimirTabla(int clave[N], char nombre[N][20], float datos[N][2])
 {
-    int i, j;
-    printf("Clave \t\ Nombre \t\ Estatura \t\ Sueldo\n");
-    for(i=0; i<N; i++)
+    int empleado;
+
+    printf("Clave    Nombre    Estatura   Sueldo\n");
+
+    for(empleado=0; empleado<N; empleado++)
     {
-        printf("%d\n", &arrcl[i]);
+       printf("%d\t", clave[empleado]);
+       printf("%s\t", nombre[empleado]);
+       printf("%f\t", datos[empleado][0]);
+       printf("%f\n", datos[empleado][1]);
     }
-    printf("\t");
-    for(i=0; i<N; i++)
-    {
-        printf("%s\n", n);
-    }
-    printf("\t");
-    for(i=0; i<N; i++)
-    {
-        for(j=0; j<N; j++)
-            {
-              printf("%f\n", &es[i][j]);
-            }
-    }
-    printf("\t");
-    for(i=0; i<N; i++)
-    {
-        for(j=0; j<N; j++)
-            {
-              printf("%f\n", &es[j][i]);
-            }
-    }
-    printf("\t");
 }
